@@ -1,3 +1,24 @@
+<?php
+  include 'database.php';
+  include 'validate.php';
+  $data = new Database;
+
+  $success = '';
+  if(isset($_POST['submit'])) {
+    $title = validate($_POST['post_title']);
+    $desc = validate($_POST['post_description']);
+
+    $insert_array = array (
+      'title' => mysqli_real_escape_string($data->con, $title),
+      'description' => mysqli_real_escape_string($data->con, $desc)
+    );
+
+    if($data->insert("tbl_posts", $insert_array)) {
+      $success = 'Data inserted';
+    }
+  }
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,16 +36,23 @@
     <div class="container">
         <form action="" method="post">
             <div class="form-group">
-              <label for="post_title">Title</label>
+              <label for="post_title"><strong>Title</strong></label>
               <input type="text" name="post_title" id="post_title" class="form-control" placeholder="Enter post title" />
-              <small id="helpId" class="text-muted">Eg. PHP using OOP</small>
+              <small id="help_title" class="text-muted">Eg. PHP using OOP</small>
             </div>
             <div class="form-group">
               <label for="post_description">Description</label>
               <input type="text" name="post_description" id="post_description" class="form-control" placeholder="Enter post title" />
-              <small id="helpId" class="text-muted">Eg. Any message you would like to say</small>
+              <small id="help_post" class="text-muted">Eg. Any message you would like to say</small>
             </div>
-            <input type="submit" value="Submit" class="btn btn-outline-warning align-center">
+            <input type="submit" value="Submit" name="submit" class="btn btn-outline-warning align-center">
+            <span class="text-success">
+            <?php
+              if(isset($success)) {
+                echo "<br><br>" .$success;
+              }
+            ?>
+            </span>
         </form>
     </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.slim.min.js"></script>
