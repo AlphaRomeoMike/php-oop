@@ -17,6 +17,25 @@ if (isset($_POST['submit'])) {
     $success = 'Data inserted';
   }
 }
+
+if (isset($_POST['edit'])) {
+  $title = validate($_POST['post_title']);
+  $desc = validate($_POST['post_description']);
+
+  $update = array(
+    'post_title' => mysqli_real_escape_string($data->con, $title),
+    'post_desc' => mysqli_real_escape_string($data->con, $desc)
+  );
+
+  $where = array(
+    'post_id' => $_POST['post_id']
+  );
+
+  if ($data->update('tbl_posts', $update, $where)) {
+    header("location:index.php?updated=1");
+  }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -45,6 +64,7 @@ if (isset($_POST['submit'])) {
           );
           $single_data = $data->select_where("tbl_posts", $where);
           foreach ($single_data as $post) {
+            //? UPDATE FORM DATA
       ?>
             <div class="form-group">
               <label for="post_title"><strong>Title</strong></label>
@@ -53,15 +73,20 @@ if (isset($_POST['submit'])) {
             </div>
             <div class="form-group">
               <label for="post_description">Description</label>
-              <textarea name="post_description" id="post_description" class="form-control" placeholder="Enter post title"><?php echo $post['post_title']; ?></textarea>
+              <textarea name="post_description" id="post_description" class="form-control" placeholder="Enter post title"><?php echo $post['post_desc']; ?></textarea>
               <small id="help_post" class="text-muted">Eg. Any message you would like to say</small>
             </div>
             <input type="hidden" name="post_id" value="<?php echo $post['post_id']; ?>">
-            <input type="submit" value="Submit" name="edit" class="btn btn-outline-secondary col-md-3" />
+            <input type="submit" value="Edit" name="edit" class="btn btn-outline-secondary col-md-3" />
+            <span><?php if (isset($_GET['updated'])) {
+                    $success = 'Post Updated';
+                  } ?></span>
+
         <?php
           }
         }
       } else {
+        //? INSERT FORM DATA
         ?>
         <div class="form-group">
           <label for="post_title"><strong>Title</strong></label>
@@ -101,13 +126,13 @@ if (isset($_POST['submit'])) {
           $counter = 1;
           $post_data = $data->select("tbl_posts");
           foreach ($post_data as $post) {
-            
+
           ?>
             <tr>
               <td width="5%"><?php echo $counter++; ?></td>
               <td width="15%"><?php echo $post["post_title"]; ?></td>
               <td width="50%"><?php echo substr($post["post_desc"], 0, 200); ?></td>
-              <td width="20%"><span><a href="" class="btn btn-outline-primary">View</a></span>
+              <td width="15%"><span><a href="" class="btn btn-outline-primary">View</a></span>
                 <span><a href="index.php?edit=1&post_id=<?php echo $post["post_id"]; ?>" class="btn btn-outline-info">Edit</a></span>
                 <span><a href="#" id="<?php echo $post["post_id"]; ?>" class="btn btn-outline-danger">Delete</a></span>
               </td>

@@ -43,20 +43,40 @@
 
 
         //* FETCH SINGLE DATA
-        public function select_where($table_name, $where_condition) {
+        public function select_where($table_name, $where) {
             $condition = '';
             $array = array();
-            foreach($where_condition as $key => $values) {
-                $condition .= $key . " = '". $values ."' AND";
+            foreach($where as $key => $value) {
+                $condition .= $key . " = '".$value."' AND ";
             }
             $condition = substr($condition, 0, -5);
-
-            $query = "SELECT * FROM ".$table_name." WHERE " . $condition;
+            $query = "SELECT * FROM $table_name WHERE $condition";
             $result = mysqli_query($this->con, $query);
-            while($row = mysqli_fetch_assoc($result)) {
+
+            while($row = mysqli_fetch_array($result)) {
                 $array[] = $row;
             }
             return $array;
+        }
+        
+        //* UPDATE SINGLE DATA
+        public function update($table_name, $fields, $where) {
+            $query = '';
+            $condition = '';
+
+            foreach($fields as $key => $value) {
+                $query .= $key. "='".$value."', ";
+            }
+            $query = substr($query, 0, -2);
+            foreach($where as $key => $value) {
+                $condition .= $key. "='".$value."' AND ";
+            }
+            $condition = substr($condition, 0, -5);
+            $query = "UPDATE $table_name SET $query WHERE $condition";
+
+            if(mysqli_query($this->con, $query)) {
+                return true;
+            }
         }
     }
 ?>
