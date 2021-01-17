@@ -78,5 +78,18 @@
                 return true;
             }
         }
+
+        public function delete($table_name, $where) {
+            $condition = '';
+            foreach($where as $key => $value) {
+                $condition .= $key. "='".$value."' AND ";
+                $condition = substr($condition, 0, -5); 
+                $query = "DELETE FROM $table_name WHERE $condition";
+
+                if(mysqli_query($this->con, $query)) {
+                    return true;
+                }
+            }
+        }
     }
 ?>

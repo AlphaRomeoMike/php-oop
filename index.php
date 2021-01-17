@@ -36,6 +36,17 @@ if (isset($_POST['edit'])) {
   }
 }
 
+if(isset($_GET['delete'])){
+  $where = array(
+    'post_id' => $_GET['post_id']
+  );
+
+  if($data->delete("tbl_posts", $where)){
+    header("location:index.php?deleted=1");
+    $success = "Data has been deleted";
+  }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -49,6 +60,7 @@ if (isset($_POST['edit'])) {
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
   <link rel="stylesheet" href="assets/styles/style.css">
+  <link rel="shortcut icon" href="assets/images/favicon.png" type="image/png">
   <title>PHP OOP CRUD</title>
 </head>
 
@@ -107,9 +119,17 @@ if (isset($_POST['edit'])) {
         }
         ?>
         </span>
+        <span class="text-danger">
+        <?php
+          if(isset($_GET['deleted'])){
+            echo "<br><br>" . $success;
+          }
+        ?>
+        </span>
     </form>
   </div>
   <div class="container-fluid">
+  <h3 class="display-4 text-center">Posts</h3>
     <div class="table-responsive">
       <table class="table table-hover table-bordered">
         <thead class="thead-inverse">
@@ -134,7 +154,7 @@ if (isset($_POST['edit'])) {
               <td width="50%"><?php echo substr($post["post_desc"], 0, 200); ?></td>
               <td width="15%"><span><a href="" class="btn btn-outline-primary">View</a></span>
                 <span><a href="index.php?edit=1&post_id=<?php echo $post["post_id"]; ?>" class="btn btn-outline-info">Edit</a></span>
-                <span><a href="#" id="<?php echo $post["post_id"]; ?>" class="btn btn-outline-danger">Delete</a></span>
+                <span><a href="index.php?delete=1&post_id=<?php echo $post["post_id"]; ?>" class=" delete btn btn-outline-danger">Delete</a></span>
               </td>
             </tr>
           <?php
@@ -144,10 +164,35 @@ if (isset($_POST['edit'])) {
       </table>
     </div>
   </div>
-
+  <div class="footer">
+          
+  </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.slim.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.3/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+  <script>
+    $('.delete').on('click', function(e){
+      e.preventDefault();
+
+      const href = $(this).attr('href')
+
+      Swal.fire({
+        title: 'Are you sure',
+        text: 'Record will be deleted',
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Delete Record',
+        icon: 'warning'
+      }).then((result) => {
+        if(result.value) {
+          document.location.href = href;
+        }
+      })
+    })
+  </script>
 </body>
 
 </html>
